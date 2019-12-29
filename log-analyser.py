@@ -168,7 +168,7 @@ html_foot = '''
 	}
 
 	let onoff = {};
-	blackList = ['computer', "IP address", 'eventID']
+	let blackList = ['computer', "IP address", 'eventID']
 	wrap.innerHTML = '<p class="title">时间范围：从 ' + timeList[0] + ' 到 ' + timeList[1] + '</p>'
 	events(undefined, wrap)
 
@@ -183,10 +183,7 @@ def matchevents(i, tag, event_end=1):
         if event_end:
             x = re.search('<.*?%s.*?>(.*?)</' % (tag), i).group(1)
         else:
-            try:
-                x = re.search("<.*?%s.*?'(.*?)'.*?>" % tag, i).group(1)
-            except:
-                x = re.search('<.*?%s.*?"(.*?)".*?>' % tag, i).group(1)
+            x = re.search("<.*?%s.*?[\"'](.*?)[\"'].*?>" % tag, i).group(1)
         return x if x != "" else 'Null'
     except:
         return "Null"
@@ -260,11 +257,10 @@ def main():
                 for xml, record in evtx_file_xml_view(fh):
                     final_count = analyze(xml,final_count)
 
-    now = int(time.time())
-    times = ''.join([str(x) for x in time.localtime(now)])
-    with open('log{}.html'.format(times), 'w', encoding='utf-8') as f:
+    file = 'log{}.html'.format(''.join([str(x) for x in time.localtime(int(time.time()))]))
+    with open(file, 'w', encoding='utf-8') as f:
         f.write(html_head + str(final_count) + "\nlet timeList=" + str(time_list) + html_foot)
-    print('log' + times + ".html已保存")
+    print(file + "已保存")
     input('按回车键退出')
 
 
